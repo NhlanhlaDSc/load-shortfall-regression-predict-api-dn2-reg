@@ -47,7 +47,8 @@ def _preprocess_data(data):
     # Convert the json string to a python dictionary object
     feature_vector_dict = json.loads(data)
     # Load the dictionary as a Pandas DataFrame.
-    feature_vector_df = pd.DataFrame.from_dict([feature_vector_dict])
+    feature_vector_dict = pd.DataFrame.from_dict([feature_vector_dict])
+    test_df = feature_vector_dict
 
     # ---------------------------------------------------------------
     # NOTE: You will need to swap the lines below for your own data
@@ -56,9 +57,42 @@ def _preprocess_data(data):
     # The code below is for demonstration purposes only. You will not
     # receive marks for submitting this code in an unchanged state.
     # ---------------------------------------------------------------
+    test_df['Valencia_pressure'] = test_df['Valencia_pressure'].fillna(test_df['Valencia_pressure'].mode())
+    test_df['time'] = pd.to_datetime(test_df['time'])
+
+    test_df['year'] = test_df['time'].dt.year
+    test_df['month'] = test_df['time'].dt.month
+    test_df['day'] = test_df['time'].dt.day
+    test_df['hour'] = test_df['time'].dt.hour
+    test_df['day_of_week'] = test_df['time'].dt.dayofweek
+    test_df['time_diff_minutes'] = test_df['time'].diff().dt.total_seconds() / 60.0
+    test_df['hour_sin'] = np.sin(2 * np.pi * test_df['hour'] / 24)
+    test_df['hour_cos'] = np.cos(2 * np.pi * test_df['hour'] / 24)
+    test_df['Valencia_wind_deg']
+    test_df['Valencia_wind_deg'] = test_df['Valencia_wind_deg'].astype(str)
+    test_df['Valencia_wind_deg'] = test_df['Valencia_wind_deg'].str.extract(r'(\d+)')
+    test_df['Valencia_wind_deg']
+    test_df['Valencia_wind_deg'] = pd.to_numeric(test_df['Valencia_wind_deg'])
+    test_df['Valencia_wind_deg']
+
+    test_df['Seville_pressure'] = test_df['Seville_pressure'].astype(str)
+
+    # Extract numeric values from the 'Seville_pressure' column
+
+    test_df['Seville_pressure'] = test_df['Seville_pressure'].str.extract(r'(\d+)')
+
+    # Convert 'Seville_pressure' column to integer type
+
+    test_df['Seville_pressure'] = pd.to_numeric(test_df['Seville_pressure'])
+
+    test_df = test_df.drop(['Unnamed: 0' , 'time'], axis = 1).reset_index()
 
     # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[['Madrid_wind_speed','Bilbao_rain_1h','Valencia_wind_speed']]
+    #predict_vector = feature_vector_dict[['Madrid_wind_speed','Bilbao_rain_1h','Valencia_wind_speed','Bilbao_wind_speed']]
+    #predict_vector = test_df[['Madrid_wind_speed','Bilbao_rain_1h','Valencia_wind_speed','Bilbao_wind_speed']]
+    #predict_vector = test_df[['Madrid_wind_speed', 'Valencia_wind_deg', 'Bilbao_rain_1h', 'Valencia_wind_speed', 'Seville_humidity', 'Madrid_humidity', 'Bilbao_clouds_all', 'Bilbao_wind_speed', 'Seville_clouds_all', 'Bilbao_wind_deg', 'Barcelona_wind_speed', 'Barcelona_wind_deg', 'Madrid_clouds_all', 'Seville_wind_speed', 'Barcelona_rain_1h', 'Seville_pressure', 'Seville_rain_1h', 'Bilbao_snow_3h', 'Barcelona_pressure', 'Seville_rain_3h', 'Madrid_rain_1h', 'Barcelona_rain_3h', 'Valencia_snow_3h', 'Madrid_weather_id', 'Barcelona_weather_id', 'Bilbao_pressure', 'Seville_weather_id', 'Valencia_pressure', 'Seville_temp_max', 'Madrid_pressure', 'Valencia_temp_max', 'Valencia_temp', 'Bilbao_weather_id', 'Seville_temp', 'Valencia_humidity', 'Valencia_temp_min', 'Barcelona_temp_max', 'Madrid_temp_max', 'Barcelona_temp', 'Bilbao_temp_min', 'Bilbao_temp', 'Barcelona_temp_min', 'Bilbao_temp_max', 'Seville_temp_min', 'Madrid_temp', 'Madrid_temp_min','year', 'month', 'day', 'hour', 'day_of_week', 'time_diff_minutes', 'hour_sin', 'hour_cos']]
+    predict_vector = test_df[['Madrid_wind_speed', 'Valencia_wind_deg', 'Bilbao_rain_1h', 'Valencia_wind_speed']]
+    #predict_vector = test_df[list(test_df.colomns)]
     # ------------------------------------------------------------------------
 
     return predict_vector
